@@ -1,5 +1,6 @@
 package guru.springframework.spring6restmvc.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.spring6restmvc.model.Customer;
 import guru.springframework.spring6restmvc.services.CustomerService;
@@ -14,8 +15,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,6 +45,9 @@ class CustomerControllerTest {
 
     @Captor
     ArgumentCaptor<UUID> uuidArgumentCaptor;
+
+    @Captor
+    ArgumentCaptor<Customer> customerArgumentCaptor;
 
     @BeforeEach
     void setUp() {
@@ -114,5 +121,22 @@ class CustomerControllerTest {
         verify(customerService).deleteById(uuidArgumentCaptor.capture());
 
         assertThat(customer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
+    }
+
+    @Test
+    void testPatchCustomer() throws Exception {
+        Customer customer = customerServiceImpl.listCustomer().get(0);
+        Map<String, Object> customerMap = new HashMap<>();
+        customerMap.put("customerName", "New Customer Name");
+
+        mockMvc.perform(patch("/api/v1/customer/" + customer.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(customerMap)))
+                .andExpect(status().isNoContent());
+        verify(customerService).patchById(uuidArgumentCaptor.capture(), customerArgumentCaptor.capture());
+
+        assertThat(customer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
+        assertThat(customerMap.get("customerName")).isEqualTo(customerArgumentCaptor.getValue().getCustomerName());
     }
 }
