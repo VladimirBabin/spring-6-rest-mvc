@@ -4,6 +4,7 @@ import com.sun.net.httpserver.Headers;
 import guru.springframework.spring6restmvc.model.Customer;
 import guru.springframework.spring6restmvc.services.CustomerService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,10 +16,22 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/customer")
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class CustomerController {
     private final CustomerService customerService;
+
+    @PatchMapping("/{customerId}")
+    public ResponseEntity patchCustomerById(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer) {
+        customerService.patchById(customerId, customer);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/{customerId}")
+    public ResponseEntity deleteById(@PathVariable("customerId") UUID customerId) {
+        customerService.deleteById(customerId);
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
 
     @PutMapping("/{customerId}")
     public ResponseEntity updateById(@PathVariable("customerId") UUID customerId, @RequestBody Customer customer) {
