@@ -35,11 +35,22 @@ class BeerControllerTest {
 
         given(beerService.getBeerById(testBeer.getId())).willReturn(testBeer);
 
-        mockMvc.perform(get("/api/v1/beer/" + testBeer.getId())
+        mockMvc.perform(get("/api/v1/beer" + testBeer.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(testBeer.getId().toString())))
                 .andExpect(jsonPath("$.beerName", is(testBeer.getBeerName())));
+    }
+
+    @Test
+    void testListBeers() throws Exception {
+        given(beerService.listBeers()).willReturn(beerServiceImpl.listBeers());
+
+        mockMvc.perform(get("/api/v1/beer")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()", is(3)));
     }
 }
