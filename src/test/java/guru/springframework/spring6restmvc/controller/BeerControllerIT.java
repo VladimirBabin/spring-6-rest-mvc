@@ -52,7 +52,7 @@ class BeerControllerIT {
     void testListBeers() {
         List<BeerDTO> beerDTOS = beerController.listBeers();
 
-        assertThat(beerDTOS).hasSize(3);
+        assertThat(beerDTOS).hasSize(2413);
     }
 
     @Transactional

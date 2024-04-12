@@ -3,6 +3,7 @@ package guru.springframework.spring6restmvc.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.spring6restmvc.model.BeerDTO;
+import guru.springframework.spring6restmvc.model.BeerStyle;
 import guru.springframework.spring6restmvc.services.BeerService;
 import guru.springframework.spring6restmvc.services.BeerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -162,7 +164,11 @@ class BeerControllerTest {
     @Test
     void testCreateBeerNullBeerName() throws Exception {
         // given
-        BeerDTO dto = BeerDTO.builder().build();
+        BeerDTO dto = BeerDTO.builder()
+                .beerStyle(BeerStyle.IPA)
+                .upc("523523523")
+                .price(new BigDecimal("11.99"))
+                .build();
         given(beerService.saveNewBeer(any(BeerDTO.class)))
                 .willReturn(beerServiceImpl.listBeers().get(1));
 
